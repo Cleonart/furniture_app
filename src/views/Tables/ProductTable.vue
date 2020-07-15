@@ -11,7 +11,7 @@
         </div>
         <div class="col-lg-5 text-right p-0 pr-3 row" style="height:43px">
           <div class="col-md-8 pr-1">
-            <base-input placeholder="Cari produk disini..." addon-left-icon="ni ni-zoom-split-in"></base-input>
+            <base-input v-model="search" placeholder="Cari produk disini..." addon-left-icon="ni ni-zoom-split-in"></base-input>
           </div>
           <div class="col-md-4 pl-1">
             <router-link to="/product/tambah">
@@ -23,12 +23,14 @@
     </div>
 
     <div class="table-responsive">
-
+      
       <base-table class="table align-items-center table-flush"
                   :class="type === 'dark' ? 'table-dark': ''"
                   :thead-classes="type === 'dark' ? 'thead-dark': 'thead-light'"
                   tbody-classes="list"
-                  :data="tableData">
+                  :data="filteredProduct"
+                  :pagination="pagination"
+                  :perPage="perPage">
 
         <template slot="columns">
           <th>Nama Produk</th>
@@ -70,7 +72,7 @@
                 <i class="fas fa-ellipsis-v"></i>
               </a>
               <template>
-                <a class="dropdown-item" href="#">Buka produk</a>
+                <a class="dropdown-item" :href="'#/product/detail/' + row.product_id" >Buka produk</a>
               </template>
             </base-dropdown>
           </td>
@@ -83,7 +85,7 @@
 
     <div class="card-footer d-flex justify-content-end"
          :class="type === 'dark' ? 'bg-transparent': ''">
-      <base-pagination total=10></base-pagination>
+      <base-pagination :total="filteredProduct.length" :perPage="perPage" v-model="pagination"></base-pagination>
     </div>
 
   </div>
@@ -102,7 +104,10 @@
     },
     data() {
       return {
-        tableData: []
+        tableData: [],
+        search: "",
+        pagination : 1,
+        perPage: 15
       }
     },
     methods: {
@@ -120,6 +125,13 @@
              })
       }
 
+    },
+    computed: {
+      filteredProduct() {
+        return this.tableData.filter(tableData => {
+          return tableData.product_name.toLowerCase().includes(this.search.toLowerCase())
+        })
+      }
     },
     created(){
       this.getProduct();

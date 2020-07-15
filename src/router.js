@@ -41,6 +41,11 @@ export default new Router({
           component: () => import(/* webpackChunkName: "demo" */ './views/Forms/ProductForms.vue')
         },
         {
+          path: '/product/detail/:product_id',
+          name: 'Produk',
+          component: () => import(/* webpackChunkName: "demo" */ './views/Forms/ProductForms.vue')
+        },
+        {
           path: '/settings',
           name: 'Pengaturan',
           component: () => import(/* webpackChunkName: "demo" */ './views/Forms/ProductForms.vue')

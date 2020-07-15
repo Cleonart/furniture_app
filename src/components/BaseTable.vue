@@ -8,15 +8,16 @@
       </tr>
     </thead>
     <tbody :class="tbodyClasses">
-      <tr v-for="(item, index) in data" :key="index">
-        <slot :row="item" :index="index">
-          <td
-            v-for="(column, index) in colsWithValue(item)"
-            :key="index">
-            {{ itemValue(item, column) }}
-          </td>
-        </slot>
-      </tr>
+        <tr v-for="(item, index) in data" :key="index">
+          <slot :row="item" :index="index" v-if="index >= ((pagination*perPage)-perPage) && 
+                                                 index < (pagination * perPage)">
+            <td
+              v-for="(column, index) in colsWithValue(item)"
+              :key="index">
+              {{ itemValue(item, column) }}
+            </td>
+          </slot>
+        </tr>
     </tbody>
   </table>
 </template>
@@ -48,6 +49,14 @@ export default {
       type: String,
       default: '',
       description: '<tbody> css classes'
+    },
+    pagination:{
+      type:Number,
+      default:1
+    },
+    perPage:{
+      type:Number,
+      default:15
     }
   },
   computed: {

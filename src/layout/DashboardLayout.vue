@@ -12,6 +12,7 @@
         <sidebar-item :link="{name: 'Order', icon: 'ni ni-bag-17 text-blue', path: '/order'}"/>
         <sidebar-item :link="{name: 'Produk', icon: 'ni ni-tag text-orange', path: '/product'}"/>
         <sidebar-item :link="{name: 'Pengaturan', icon: 'ni ni-settings text-black', path: '/settings'}"/>
+        <sidebar-item :link="{name: 'Keluar', icon: 'ni ni-button-power text-red', path: '/settings'}"/>
       </template>
     </side-bar>
     <div class="main-content" :data="sidebarBackground">
