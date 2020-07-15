@@ -27,23 +27,23 @@ export default new Router({
         },
         {
           path: '/order/tambah',
-          name: 'orderbaru',
+          name: 'Order Baru',
           component: () => import(/* webpackChunkName: "demo" */ './views/Forms/OrderBaru.vue')
         },
         {
-          path: '/profile',
-          name: 'profile',
-          component: () => import(/* webpackChunkName: "demo" */ './views/UserProfile.vue')
+          path: '/product',
+          name: 'Produk',
+          component: () => import(/* webpackChunkName: "demo" */ './views/Product.vue')
         },
         {
-          path: '/maps',
-          name: 'maps',
-          component: () => import(/* webpackChunkName: "demo" */ './views/Maps.vue')
+          path: '/product/tambah',
+          name: 'Produk',
+          component: () => import(/* webpackChunkName: "demo" */ './views/Forms/ProductForms.vue')
         },
         {
-          path: '/tables',
-          name: 'tables',
-          component: () => import(/* webpackChunkName: "demo" */ './views/Tables.vue')
+          path: '/settings',
+          name: 'Pengaturan',
+          component: () => import(/* webpackChunkName: "demo" */ './views/Forms/ProductForms.vue')
         }
       ]
     },
@@ -56,11 +56,6 @@ export default new Router({
           path: '/login',
           name: 'login',
           component: () => import(/* webpackChunkName: "demo" */ './views/Login.vue')
-        },
-        {
-          path: '/register',
-          name: 'register',
-          component: () => import(/* webpackChunkName: "demo" */ './views/Register.vue')
         }
       ]
     }

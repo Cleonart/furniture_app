@@ -17,7 +17,6 @@
                            aria-haspopup="true" aria-expanded="false">
                             <i class="ni ni-bell-55"></i>
                         </a>
-
                         <a class="dropdown-item" href="#">Action</a>
                         <a class="dropdown-item" href="#">Another action</a>
                         <div class="dropdown-divider"></div>

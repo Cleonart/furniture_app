@@ -9,13 +9,13 @@
             {{title}}
           </h3>
         </div>
-        <div class="col-lg-6 text-right p-0 pr-3 row" style="height:43px">
+        <div class="col-lg-5 text-right p-0 pr-3 row" style="height:43px">
           <div class="col-md-8 pr-1">
             <base-input placeholder="Cari order disini..." addon-left-icon="ni ni-zoom-split-in"></base-input>
           </div>
           <div class="col-md-4 pl-1">
             <router-link to="/order/tambah">
-              <base-button class="w-100" type="primary">Order Baru</base-button>
+              <base-button class="w-100" type="primary" icon="ni ni-fat-add">Baru</base-button>
             </router-link>
           </div>
         </div>
@@ -32,26 +32,25 @@
           <th>Nama Order</th>
           <th>Status</th>
           <th>Produk</th>
+          <th>Tenggat Waktu</th>
           <th>Completion</th>
           <th></th>
         </template>
         <template slot-scope="{row}">
-          <th scope="row">
-            <div class="media align-items-center">
-              <a href="#" class="avatar rounded-circle mr-3">
-                <img alt="Image placeholder" :src="row.img">
-              </a>
-              <div class="media-body">
-                <span class="name mb-0 text-sm">{{row.title}}</span>
-              </div>
-            </div>
-          </th>
+
+          <td scope="row">
+            <span class="name mb-0 text-sm"><strong>{{row.title}}</strong></span>
+          </td>
+
+          <!-- status -->
           <td>
             <badge class="badge-dot mr-4" :type="row.statusType">
               <i :class="`bg-${row.statusType}`"></i>
               <span class="status">{{row.status}}</span>
             </badge>
           </td>
+
+          <!-- produk spk -->
           <td>
             <div class="avatar-group">
               <a v-for="data in row.product" :key="data" href="#" class="avatar avatar-sm rounded-circle" data-toggle="tooltip">
@@ -60,6 +59,12 @@
             </div>
           </td>
 
+          <!-- tenggat waktu -->
+          <td>
+            <span class="name mb-0 text-sm">12-02-2020</span>
+          </td>
+
+          <!-- persentase selesai -->
           <td>
             <div class="d-flex align-items-center">
               <span class="completion mr-2">{{row.completion}}%</span>
@@ -80,8 +85,7 @@
               </a>
               <template>
                 <a class="dropdown-item" href="#">Buka order</a>
-                <a class="dropdown-item" href="#">Another action</a>
-                <a class="dropdown-item" href="#">Something else here</a>
+                <a class="dropdown-item" href="#">Printout</a>
               </template>
             </base-dropdown>
           </td>
