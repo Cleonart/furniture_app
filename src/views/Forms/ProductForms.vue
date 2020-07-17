@@ -1,7 +1,7 @@
 <template>
 	<div>
 		<base-header class="header pb-8 pt-5 pt-lg-8 d-flex align-items-center"
-                 style="min-height: 400px; background-image: url(img/order.jpg); background-size: cover; background-position: center -100px;">
+					:style="'min-height: 400px; background-image: url(' + product.product_img + '); background-size: cover; background-position: center -150px;'">
             <span class="mask bg-gradient-primary opacity-8"></span>
             <div class="container-fluid d-flex align-items-center" style="margin-top:-30px">
               <div class="row mb-4">
@@ -14,17 +14,18 @@
               </div>
             </div>
         </base-header>
+
 		<div class="container-fluid mt--8">
 			<form @submit.prevent class="container row">
-
-				<div class="card col-md-6 pt-4 pb-4 pl-4 pr-4">
-
+				<card class="card col-md-6 pt-1 pb-4 pl-4 pr-4">
+					<div slot="header" class="bg-white border-0">
+                            <div class="row align-items-center">
+                                <div class="col-8">
+                                    <h3 class="mb-0">Info Dasar Produk</h3>
+                                </div>
+                            </div>
+                        </div>
 					<div class="row">
-						
-						<!-- nama produk -->
-						<div class="col-md-12 mb-3">
-							<h4>Info Dasar Produk</h4>
-						</div>
 
 						<!-- id produk -->
 						<div class="col-md-12 mb--2">
@@ -89,7 +90,7 @@
 
 					</div>
 
-				</div>
+				</card>
 
 				<div class="col-md-6">
 					<div class="card pl-4 pr-4 pt-4">
@@ -99,18 +100,16 @@
 							<h4>Info Gambar Produk</h4>
 						</div>
 
-						
+						<file-pond
+							:server="'http://127.0.0.1/furniture_api/api/v1/pond/'"
+							ref="file" 
+							instantUpload="false"
+							label-idle="Masukan Gambar Disini... <span class='filepond--label-action'>Pilih File</span>" 
+							:files="myFiles"/>
+
 					</div>
 				</div>
-
 			</form>
-			<file-pond
-								:files="myFiles"
-								server="http://127.0.0.1/pond/"
-								name="test"
-								ref="pond" 
-								instantUpload="true"
-								label-idle="Masukan file disini.."/>
         </div>
 	</div>
 </template>
@@ -120,16 +119,26 @@
 	const axios = require('axios');
 
 	// Import Vue FilePond
-	import vueFilePond from 'vue-filepond';
+	import vueFilePond, { setOptions } from 'vue-filepond';
 
 	// Import FilePond styles
 	import 'filepond/dist/filepond.min.css';
 
 	// IMPORT FILEPOND PLUGINS
-	//import FilePondPluginFileRename from 'filepond-plugin-file-rename/dist/filepond-plugin-file-rename.esm.js';
-	//import FilePondPluginImagePreview from 'filepond-plugin-image-preview';
+	import FilePondPluginFileRename from 'filepond-plugin-file-rename/dist/filepond-plugin-file-rename.esm.js';
+	import FilePondPluginImagePreview from 'filepond-plugin-image-preview';
+	import 'filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css';
 
-	const FilePond = vueFilePond();
+	const FilePond = vueFilePond(FilePondPluginImagePreview,FilePondPluginFileRename);
+
+	setOptions({
+		fileRenameFunction: (file) => {
+			// MAKE NEW DATA -- FORMAT FILE RENAME -- YEAR.DATE.MONTH.HOURS.MINUTES.SECONDS -- EG. 2019201142040.extension
+			var date     = new Date();
+			var dateTime = date.getFullYear() + "" + date.getDate() + "" + date.getMonth() + "" + date.getHours() + "" + date.getMinutes() + "" + date.getSeconds();
+			return dateTime + `${file.extension}`;
+		}
+	})
 
 	export default {
 		data(){
@@ -138,7 +147,7 @@
 					product_id:"",
 					product_name:"",
 					product_type:"Tipe Produk",
-					product_img:"",
+					product_img: 'img/products.jpg',
 					product_dimension_length:'',
 					product_dimension_wide:'',
 					product_dimension_height:''
@@ -158,7 +167,7 @@
 		methods: {
 
 			resetForms: function(){
-				this.product.product_id = "";
+				this.product.product_id = this.generateId();
 				this.product.product_name = "";
 				this.product.product_type = "Tipe Produk";
 				this.product.product_img = "";
@@ -173,6 +182,14 @@
 				axios.get(url)
 					.then(function(response){
 						app.product = response.data[0];
+						let filepath = response.data[0].product_img;
+
+						// mengambil gambar dan meletakannya di file uploader
+						if(filepath != ""){
+							filepath = "http://127.0.0.1" + filepath;
+							app.$refs.file.addFile(filepath, { index: 0 });
+							app.product.product_img = filepath;
+						}
 						console.log(app.product);
 					})
 					.catch(function(error){
@@ -181,8 +198,19 @@
 				},
 
 			checkFile: function(){
-				console.log(this.$refs.pond);
-				console.log(this.$refs.pond.getFile());
+
+				this.$refs.file.processFile()
+					.then(response => {
+						console.log(response);
+						let server_id = this.$refs.file.getFile().serverId;
+						let filename  = this.$refs.file.getFile().filename;
+						this.product.product_img = "/furniture_api/img/" + server_id + "/" + filename;	
+						this.addOrUpdateData();
+					})	
+					.catch(error => {
+						alert("Gagal menyimpan data");
+						console.log(error);
+					});
 			},
 
 			formsCheck: function(){
@@ -202,26 +230,65 @@
 				// melakukan cek dimensi tinggi dari produk
 				this.forms_class.valid_height = this.product.product_dimension_height == "" ? false : true;
 
+				// melakukan cek jika gambar sudah dimasukan
+				let imgExist = this.$refs.file.getFile();
+
+				this.$swal({
+					icon: 'warning',
+					title: 'Mohon tunggu',
+					text: 'Mengupload data anda...',
+					showConfirmButton: false,
+					timerProgressBar: true,
+					onBeforeOpen: () => {
+						this.$swal.showLoading()
+					},
+				});
+
 				// melakukan cek jika semua form sudah terisi
 				if(	this.forms_class.valid_name && 
 					this.forms_class.valid_type &&
 					this.forms_class.valid_length &&
 					this.forms_class.valid_wide &&
 					this.forms_class.valid_height){
-					alert("done");
-					return true;
+
+					if(imgExist != null){
+						this.checkFile();
+					}
+
+					else{
+						this.$swal('Gambar tidak ditemukan','Anda harus melengkapi gambar','error');
+					}
+					
 				}
 
 				// jika form tidak terisi
 				else{
-					alert("not done");
-					return false
+					this.$swal('Data tidak lengkap','Anda harus melengkapi semua data','error');
 				}
 				
 			},
 
 			addOrUpdateData: function(){
 
+				var app = this;
+				let url = "http://127.0.0.1/furniture_api/api/v1/product/add.php";
+
+				axios({
+					method: 'POST',
+					url: url,
+					data: app.product,
+					headers : {
+						'Content-Type' : 'application/x-www-form-urlencoded;charset=UTF-8'
+					}
+				})
+				.then(function (response) {
+					app.$swal('Berhasil','Data berhasil tersimpan di database','success');
+					console.log(response);
+					window.history.back();
+				})
+				.catch(function (error) {
+					console.log(error);
+				});
 			},
 			
 			generateId: function(){
@@ -239,12 +306,15 @@
 
 			if(this.$route.params.product_id == undefined){
 				this.product.product_id = this.generateId();
+				this.resetForms();
+				this.product.product_img = 'img/products.jpg';
 			}
 
 			else{
 				this.getProduct(this.$route.params.product_id);
 				this.buttonText = "Perbarui";
 			}
+
 		}
 	};
 </script>

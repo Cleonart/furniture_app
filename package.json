@@ -20,6 +20,7 @@
     "filepond-plugin-image-preview": "^4.6.4",
     "flatpickr": "4.6.3",
     "nouislider": "14.6.0",
+    "pdfmake": "^0.1.66",
     "register-service-worker": "1.7.1",
     "vue": "2.6.11",
     "vue-chartjs": "3.5.0",
@@ -27,6 +28,7 @@
     "vue-filepond": "^6.0.2",
     "vue-flatpickr-component": "8.1.5",
     "vue-router": "3.3.4",
+    "vue-sweetalert2": "^3.0.6",
     "vue2-transitions": "0.3.0"
   },
   "devDependencies": {

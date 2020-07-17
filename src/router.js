@@ -28,7 +28,12 @@ export default new Router({
         {
           path: '/order/tambah',
           name: 'Order Baru',
-          component: () => import(/* webpackChunkName: "demo" */ './views/Forms/OrderBaru.vue')
+          component: () => import(/* webpackChunkName: "demo" */ './views/Forms/OrderForms.vue')
+        },
+        {
+          path: '/order/detail/:product_id',
+          name: 'Detail Order',
+          component: () => import(/* webpackChunkName: "demo" */ './views/Forms/OrderForms.vue')
         },
         {
           path: '/product',
@@ -37,12 +42,12 @@ export default new Router({
         },
         {
           path: '/product/tambah',
-          name: 'Produk',
+          name: 'Produk Baru',
           component: () => import(/* webpackChunkName: "demo" */ './views/Forms/ProductForms.vue')
         },
         {
           path: '/product/detail/:product_id',
-          name: 'Produk',
+          name: 'Detail Produk',
           component: () => import(/* webpackChunkName: "demo" */ './views/Forms/ProductForms.vue')
         },
         {

@@ -45,7 +45,9 @@
           <th scope="row">
             <div class="media align-items-center">
               <a href="#" class="avatar rounded-circle mr-3">
-                <img alt="Image placeholder" :src="row.product_img">
+                <div :style="'width:100%;height:100%;border-radius:100%;background:url(http://127.0.0.1' + row.product_img + ';background-size:cover;background-position:center'">
+                </div>
+                
               </a>
               <div class="media-body">
                 <span class="name mb-0 text-sm">{{row.product_name}}</span>
@@ -85,11 +87,15 @@
 
     <div class="card-footer d-flex justify-content-end"
          :class="type === 'dark' ? 'bg-transparent': ''">
-      <base-pagination :total="filteredProduct.length" :perPage="perPage" v-model="pagination"></base-pagination>
+      <base-pagination  :total="filteredProduct.length" 
+                        :perPage="perPage" 
+                        v-model="pagination"></base-pagination>
     </div>
 
   </div>
+  
 </template>
+
 <script>
 
   const axios = require('axios');
@@ -107,11 +113,10 @@
         tableData: [],
         search: "",
         pagination : 1,
-        perPage: 15
+        perPage: 10
       }
     },
     methods: {
-      
       getProduct : function(){
         var app = this;
         let url = "http://127.0.0.1/furniture_api/api/v1/product/get.php";
@@ -124,7 +129,6 @@
                 console.log(error);
              })
       }
-
     },
     computed: {
       filteredProduct() {
