@@ -28,55 +28,59 @@
 					<div class="row">
 
 						<!-- id order -->
-						<div class="col-md-12 mb--2">
+						<div class="col-12 mb--2">
 							<base-input disabled 
 										:value="'Kode Order : ' + order.order_id"
 										required></base-input>
 						</div>
 
 						<!-- nama order -->
-						<div class="col-md-12 mb--2">
+						<div class="col-6 mb--2">
+							<h5>Nama Order <span class="text-red">*</span></h5>
 							<base-input placeholder="Nama Order" 
 										v-model="order.order_name" 
 										required
-										label="Nama Order"
 										:valid="forms_class.valid_name"></base-input>
 						</div>
 
 						<!-- lokasi order  -->
-						<div class="col-md-12 mb--2">
+						<div class="col-6 mb--2">
+							<h5>Lokasi Order <span class="text-red">*</span></h5>
 							<base-input placeholder="Lokasi Order" 
 										v-model="order.order_location" 
 										required
-										label="Lokasi Order"
 										:valid="forms_class.valid_location"></base-input>
 						</div>
 
-						<base-input class="col-md-12 mb-3"
-									v-model="order.valid_note" 
-									label="Catatan Order"
-									alternative="">
-									<textarea   rows="4" 
-												class="form-control" 
-												placeholder="Catatan order..."></textarea>
-						</base-input>
+						<div class="col-md-12">
+							<h5>Catatan Order</h5>
+							<base-input v-model="order.order_note"
+										:valid="forms_class.valid_note"
+										alternative="">
+										<textarea   rows="4" 
+													class="form-control" 
+													placeholder="Catatan order..."></textarea>
+							</base-input>
+						</div>
+
 					</div>
 				</card>
 
 				<!-- form tambah spk -->
-				<div class="card shadow col-md-12 mt-3 pt-5 pb-4 pl-5 pr-5"> 
+				<div class="card shadow col-md-12 mt-3 pt-4 pb-3 pl-4 pr-4"> 
 					<h3 class="col mb-4">Tambah SPK Baru</h3>
 					<div class="row">
 						<div class="col">
 							<div class="col-12">
+								<h5>Nama SPK <span class="text-red">*</span></h5>
 								<base-input placeholder="Nama SPK" 
 											v-model="spk_forms.spk_name"
 											required
-											label="Nama SPK"
 											:valid="forms_class.valid_location"></base-input>
 							</div>
 
 							<div class="col-12">
+								<h5>Pilih Produk <span class="text-red">*</span></h5>
 								<select v-model="spk_forms.spk_product_id">
 									<option default disabled selected>Pilih Produk</option>
 									<option v-for="product in products"
@@ -85,8 +89,8 @@
 							</div>
 
 							<div class="col-12 mt-3">
-								<base-input	label="Catatan Order"
-											alternative="">
+								<h5>Catatan SPK</h5>
+								<base-input	alternative="">
 											<textarea 	rows="2" 
 														class="form-control" 
 														placeholder="Catatan SPK..."
@@ -207,8 +211,7 @@
 											<i class="fas fa-ellipsis-v"></i>
 										</a>
 										<template>
-											<a class="dropdown-item" :href="'#/product/detail/' + row.product_id" >Buka produk</a>
-											<span v-on:click="deleteSPK(row.spk_id)" class="dropdown-item">Hapus SPK</span>
+											<span v-on:click="deleteSPK(row.spk_id)" style="cursor:pointer" class="dropdown-item">Hapus SPK</span>
 										</template>
 									</base-dropdown>
 								</td>
@@ -220,7 +223,7 @@
 				
 				<div class="card shadow col-md-12 mt-3 pt-3 pb-3">
 					<div class="col-md-12">
-						<base-button v-on:click="formsCheck()" type="primary">Selesai</base-button>
+						<base-button v-on:click="uploadSpkToServer()" type="primary">Selesai</base-button>
 						</div>
 				</div>
 
@@ -255,8 +258,10 @@
 					spk_deadline_team_2 : "",
 					spk_deadline_team_3 : ""
 				},
+
 				spk: [],
 				products: [],
+
 				forms_class: {
 					valid_name : 0,
 					valid_location : 0,
@@ -268,6 +273,14 @@
 		},
 		methods: {
 
+			/** 
+			 * Start Product Functions 
+			 */
+			
+			// mengambil data order dan produk
+			// order   : response.data.data[index].order
+			// spk     : response.data.data[index].spk
+			// product : response.data.product 
 			getProduct : function(id){
 				var app = this;
 				let url = "http://127.0.0.1/furniture_api/api/v1/order/get.php?order_id=" + id;
@@ -280,42 +293,9 @@
 						console.log(error);
 					})
 			},
-			
-			addSPK: function(){
-				let spk_id = this.generateId();
-				let spk_name = this.spk_forms.spk_name;
-				let spk_deadline_team_1 = this.spk_forms.spk_deadline_team_1;
-				let spk_deadline_team_2 = this.spk_forms.spk_deadline_team_2;
-				let spk_deadline_team_3 = this.spk_forms.spk_deadline_team_3;
 
-				if(	this.spk_forms.spk_name != "" &&
-					this.spk_forms.spk_product_id != "Pilih Produk" &&
-					this.spk_forms.spk_deadline_team_1 != "" &&
-					this.spk_forms.spk_deadline_team_2 != "" &&
-					this.spk_forms.spk_deadline_team_3 != ""){
-					
-					let i = this.searchForProduct(this.spk_forms.spk_product_id);
-					let product_id   = this.products[i].product_id;
-					let product_name = this.products[i].product_name;
-					let product_img  = this.products[i].product_img;
-					this.spk.push({spk_id, spk_name,product_id,product_name,product_img, spk_deadline_team_1, spk_deadline_team_2, spk_deadline_team_3});
-					this.$swal("Penambahan SPK Berhasil", "Penambahan data berhasil", "success");
-					this.resetSpkForms();
-				}
-				else{
-					this.$swal('Penambahan SPK Gagal', "Anda harus melengkapi semua kotak yang tersedia", "error");
-				}
-				
-			},
-			
-			deleteSPK: function(spk_id){
-				for(let i=0;i < this.spk.length;i++){
-					if(spk_id == this.spk[i].spk_id){
-						this.spk.splice(i,1);
-					}
-				}
-			},
-
+			// mencari produk dengan id yang sama
+			// nilai balik : index dari products
 			searchForProduct: function(data){
 				let split_data = data.split("-");
 				console.log(split_data);
@@ -329,18 +309,108 @@
 				return i;
 			},
 
-			resetSpkForms: function(){
-				this.spk_forms.spk_id= "";
-				this.spk_forms.spk_name = "";
-				this.spk_forms.spk_product_id = "Pilih Produk";
-				this.spk_forms.spk_note = "";
-				this.spk_forms.spk_deadline_team_1 = "";
-				this.spk_forms.spk_deadline_team_2 = "";
-				this.spk_forms.spk_deadline_team_3 = "";
+			/** 
+			 * End Product Functions 
+			 */	
+
+			/** 
+			 * Start SPK Functions 
+			 */
+			addSPK: function(){
+				let spk_id = this.generateId();
+				let spk_name = this.spk_forms.spk_name;
+				let spk_deadline_team_1 = this.spk_forms.spk_deadline_team_1;
+				let spk_deadline_team_2 = this.spk_forms.spk_deadline_team_2;
+				let spk_deadline_team_3 = this.spk_forms.spk_deadline_team_3;
+
+				if(	this.spk_forms.spk_name != "" &&
+					this.spk_forms.spk_product_id != "Pilih Produk" &&
+					this.spk_forms.spk_deadline_team_1 != "" &&
+					this.spk_forms.spk_deadline_team_2 != "" &&
+					this.spk_forms.spk_deadline_team_3 != ""){
+					let i = this.searchForProduct(this.spk_forms.spk_product_id);
+					let product_id   = this.products[i].product_id;
+					let product_name = this.products[i].product_name;
+					let product_img  = this.products[i].product_img;
+					this.spk.push({spk_id, spk_name,product_id,product_name,product_img, spk_deadline_team_1, spk_deadline_team_2, spk_deadline_team_3});
+					this.$swal("Penambahan SPK Berhasil", "Penambahan data berhasil", "success");
+					this.resetForms("spk");
+				}
+				else{
+					this.$swal('Penambahan SPK Gagal', "Anda harus melengkapi semua kotak yang tersedia", "error");
+				}
+				
+			},
+			
+			deleteSPK: function(spk_id){
+				for(let i=0;i < this.spk.length;i++){
+					if(spk_id == this.spk[i].spk_id){
+						this.spk.splice(i,1);
+						this.$swal("Update Berhasil", "SPK berhasil dihapus", "success");
+					}
+				}
 			},
 
-			uploadSpkToServer: function(){
+			resetForms: function(id){
 
+				if(id == "spk"){
+					this.spk_forms.spk_id= "";
+					this.spk_forms.spk_name = "";
+					this.spk_forms.spk_product_id = "Pilih Produk";
+					this.spk_forms.spk_note = "";
+					this.spk_forms.spk_deadline_team_1 = "";
+					this.spk_forms.spk_deadline_team_2 = "";
+					this.spk_forms.spk_deadline_team_3 = "";
+				}
+
+				else if(id == "order"){
+					this.order.order_name = "";
+					this.order.order_location = "";
+				}
+				
+			},
+
+			/** 
+			 * End SPK Functions 
+			 */	
+			
+			uploadSpkToServer: function(){
+				var app = this;
+				if(this.checkOrderForms()){
+					
+					let url = "http://127.0.0.1/furniture_api/api/v1/order/add.php";
+					let server_data = {
+						order : app.order,
+						spk   : app.spk 
+					};
+
+					this.$swal({
+						icon: 'warning',
+						title: 'Mohon tunggu',
+						text: 'Mengupload data anda...',
+						allowOutsideClick: false,
+						showConfirmButton: false,
+						timerProgressBar: true,
+						onBeforeOpen: () => {
+							this.$swal.showLoading()
+						},
+					});
+					
+					axios({
+						method: 'POST',
+						url: url,
+						data: server_data,
+						headers : {
+							'Content-Type' : 'application/x-www-form-urlencoded;charset=UTF-8'
+						}
+					})
+					.then(response => {
+						console.log(response);
+					})
+					.catch(error => {
+						console.log(error);
+					})
+				}
 			},
 
 			generateId: function(){
@@ -348,11 +418,40 @@
 				let max    = 9999999;  
 				let random = Math.floor(Math.random() * (+max + 1 - +min)) + +min; 
 				return random;
+			},
+
+			checkOrderForms: function(){
+
+				// melakukan cek nama dari order
+				this.forms_class.valid_name = this.order.order_name == "" ? false : true;
+
+				// melakukan cek lokasi valid
+				this.forms_class.valid_location = this.order.order_location == "" ? false : true;
+
+				// melakukan cek catatan order
+				this.forms_class.valid_note = this.order.order_note == "" ? false : true;
+
+				if( this.order.order_name 	  != "" &&
+					this.order.order_location != ""){
+					if(this.spk.length == 0){
+						this.$swal("Data Gagal Disimpan", "Tabel spk tidak boleh kosong", "error");
+						return false;
+					}
+					else{
+						return true;	
+					}
+				}
+
+				window.scrollTo(0,0);
+				this.$swal("Data Gagal Disimpan", "Mohon lengkapi semua data", "error");
+				return false;
 			}
+
 		},
 
 		created(){
 			
+			window.scrollTo(0,0);
 			if(this.$route.params.order_id == undefined){
 				this.order.order_id = this.generateId();
 			}
