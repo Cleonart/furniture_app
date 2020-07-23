@@ -380,8 +380,8 @@
 					
 					let url = "http://127.0.0.1/furniture_api/api/v1/order/add.php";
 					let server_data = {
-						order : app.order,
-						spk   : app.spk 
+						orders : app.order,
+						spk    : app.spk 
 					};
 
 					this.$swal({
@@ -405,9 +405,11 @@
 						}
 					})
 					.then(response => {
+						app.$swal("Update Berhasil", "Perubahan berhasil disimpan", "success");
 						console.log(response);
 					})
 					.catch(error => {
+						app.$swal("Update Gagal", "Terjadi masalah dengan server", "error");
 						console.log(error);
 					})
 				}
