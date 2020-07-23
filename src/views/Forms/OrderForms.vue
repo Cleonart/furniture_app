@@ -284,10 +284,19 @@
 			getProduct : function(id){
 				var app = this;
 				let url = "http://127.0.0.1/furniture_api/api/v1/order/get.php?order_id=" + id;
+				this.loading();
 				axios.get(url)
 					.then(function(response){
 						app.products = response.data.product;
+						if(response.data.order != []){
+							app.order.order_id = response.data.orders.order_id;
+							app.order.order_name = response.data.order.order_name;
+							app.order.order_location = response.data.order.order_location;
+							app.order.order_note = response.data.order.order_note;
+							app.spk = response.data.spk;
+						}
 						console.log(response.data);
+						app.dismissLoading();
 					})
 					.catch(function(error){
 						console.log(error);
@@ -373,6 +382,24 @@
 			/** 
 			 * End SPK Functions 
 			 */	
+
+			loading : function(){
+				this.$swal({
+					icon: 'warning',
+					title: 'Mohon tunggu',
+					text: 'Mengupload data anda...',
+					allowOutsideClick: false,
+					showConfirmButton: false,
+					timerProgressBar: true,
+					onBeforeOpen: () => {
+						this.$swal.showLoading()
+					},
+				});
+			},
+
+			dismissLoading : function(){
+				this.$swal.close();
+			},
 			
 			uploadSpkToServer: function(){
 				var app = this;
@@ -384,17 +411,7 @@
 						spk    : app.spk 
 					};
 
-					this.$swal({
-						icon: 'warning',
-						title: 'Mohon tunggu',
-						text: 'Mengupload data anda...',
-						allowOutsideClick: false,
-						showConfirmButton: false,
-						timerProgressBar: true,
-						onBeforeOpen: () => {
-							this.$swal.showLoading()
-						},
-					});
+					this.loading();
 					
 					axios({
 						method: 'POST',
