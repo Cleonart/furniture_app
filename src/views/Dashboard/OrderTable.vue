@@ -29,53 +29,45 @@
                   tbody-classes="list"
                   :data="tableData">
         <template slot="columns">
+          <th>ID Order</th>
           <th>Nama Order</th>
           <th>Status</th>
+          <th>Lokasi</th>
           <th>Produk</th>
-          <th>Tenggat Waktu</th>
-          <th>Completion</th>
           <th></th>
         </template>
         <template slot-scope="{row}">
 
+           <!-- order id -->
+          <td>
+            <span class="name mb-0 text-sm">{{row.order.order_id}}</span>
+          </td>
+
           <td scope="row">
-            <span class="name mb-0 text-sm"><strong>{{row.title}}</strong></span>
+            <span class="name mb-0 text-sm"><strong>{{row.order.order_name}}</strong></span>
           </td>
 
           <!-- status -->
           <td>
-            <badge class="badge-dot mr-4" :type="row.statusType">
-              <i :class="`bg-${row.statusType}`"></i>
-              <span class="status">{{row.status}}</span>
+            <badge class="badge-dot mr-4" :type="row.order.order_status">
+              <span class="status">{{row.order.order_status}}</span>
             </badge>
+          </td>
+
+          <td scope="row">
+            <span class="name mb-0 text-sm">{{row.order.order_location}}</span>
           </td>
 
           <!-- produk spk -->
           <td>
             <div class="avatar-group">
-              <a v-for="data in row.product" :key="data" href="#" class="avatar avatar-sm rounded-circle" data-toggle="tooltip">
-                <img alt="Image placeholder" :src="data">
+              <a v-for="data in row.spk" :key="data" href="#" class="avatar avatar-sm rounded-circle" data-toggle="tooltip">
+                <div :style="'width:100%;height:100%;border-radius:100%;background:url(http://127.0.0.1' + data.product_img + ';background-size:cover;background-position:center'">
+                </div>
               </a>
             </div>
           </td>
 
-          <!-- tenggat waktu -->
-          <td>
-            <span class="name mb-0 text-sm">12-02-2020</span>
-          </td>
-
-          <!-- persentase selesai -->
-          <td>
-            <div class="d-flex align-items-center">
-              <span class="completion mr-2">{{row.completion}}%</span>
-              <div>
-                <base-progress :type="row.statusType"
-                               :show-percentage="false"
-                               class="pt-0"
-                               :value="row.completion"/>
-              </div>
-            </div>
-          </td>
 
           <td class="text-right">
             <base-dropdown class="dropdown"
@@ -84,7 +76,7 @@
                 <i class="fas fa-ellipsis-v"></i>
               </a>
               <template>
-                <a class="dropdown-item" href="#">Buka order</a>
+                <a class="dropdown-item" :href="'#/order/detail/' + row.order.order_id">Buka order</a>
                 <a class="dropdown-item" href="#">Printout</a>
               </template>
             </base-dropdown>
@@ -101,6 +93,9 @@
   </div>
 </template>
 <script>
+  
+  const axios = require('axios');
+
   export default {
     name: 'projects-table',
     props: {
@@ -111,35 +106,31 @@
     },
     data() {
       return {
-        tableData: [
-          {
-            img: 'img/theme/bootstrap.jpg',
-            title: 'John Doe - Jakarta',
-            budget: '$2500 USD',
-            status: 'terjadwal',
-            statusType: 'info',
-            product: [
-              "img/theme/team-1-800x800.jpg",
-              "img/theme/team-1-800x800.jpg",
-              "img/theme/team-1-800x800.jpg",
-            ],
-            completion: 60
-          },
-          {
-            img: 'img/theme/angular.jpg',
-            title: 'Jane Doe - Bandung',
-            budget: '$1800 USD',
-            status: 'terjadwal',
-            statusType: 'info',
-            product: [
-              "img/theme/angular.jpg",
-              "img/theme/team-1-800x800.jpg",
-              "img/theme/team-1-800x800.jpg",
-            ],
-            completion: 100
-          }
-        ]
+        tableData: []
       }
+    },
+    methods: {
+      
+      getOrderData : function(){
+        var app = this;
+        let url = "http://127.0.0.1/furniture_api/api/v1/order/get.php";
+
+        axios.get(url)
+          .then(function(response){
+            //app.products = response.data.product;
+            console.log(response.data);
+            app.tableData = response.data.data;
+            //app.dismissLoading();
+          })
+          .catch(function(error){
+            console.log(error);
+          })
+      }
+
+    },
+
+    created(){
+      this.getOrderData();
     }
   }
 </script>

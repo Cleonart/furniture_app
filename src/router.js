@@ -31,8 +31,13 @@ export default new Router({
           component: () => import(/* webpackChunkName: "demo" */ './views/Forms/OrderForms.vue')
         },
         {
-          path: '/order/detail/:product_id',
+          path: '/order/detail/:order_id',
           name: 'Detail Order',
+          component: () => import(/* webpackChunkName: "demo" */ './views/Forms/OrderForms.vue')
+        },
+       {
+          path: '/order/printout/:order_id',
+          name: 'Printout',
           component: () => import(/* webpackChunkName: "demo" */ './views/Forms/OrderForms.vue')
         },
         {

@@ -154,7 +154,7 @@
 					<div class="card-header border-0 bg-transparent">
 						<div class="row align-items-center"> 
 							<div class="col">
-								<h3 class="mb-0" :class="type === 'dark' ? 'text-white': ''">
+								<h3 class="mb-0" :class="'type' === 'dark' ? 'text-white': ''">
 									Detail SPK
 								</h3>
 							</div>
@@ -224,7 +224,7 @@
 				<div class="card shadow col-md-12 mt-3 pt-3 pb-3">
 					<div class="col-md-12">
 						<base-button v-on:click="uploadSpkToServer()" type="primary">Selesai</base-button>
-						</div>
+					</div>
 				</div>
 
 			</form>
@@ -284,19 +284,14 @@
 			getProduct : function(id){
 				var app = this;
 				let url = "http://127.0.0.1/furniture_api/api/v1/order/get.php?order_id=" + id;
-				this.loading();
 				axios.get(url)
 					.then(function(response){
 						app.products = response.data.product;
-						if(response.data.order != []){
-							app.order.order_id = response.data.orders.order_id;
-							app.order.order_name = response.data.order.order_name;
-							app.order.order_location = response.data.order.order_location;
-							app.order.order_note = response.data.order.order_note;
-							app.spk = response.data.spk;
+						if(response.data.data.length > 0){
+							app.order = response.data.data[0].order;
+							app.spk   = response.data.data[0].spk;
 						}
 						console.log(response.data);
-						app.dismissLoading();
 					})
 					.catch(function(error){
 						console.log(error);
@@ -345,10 +340,10 @@
 					this.$swal("Penambahan SPK Berhasil", "Penambahan data berhasil", "success");
 					this.resetForms("spk");
 				}
+
 				else{
 					this.$swal('Penambahan SPK Gagal', "Anda harus melengkapi semua kotak yang tersedia", "error");
 				}
-				
 			},
 			
 			deleteSPK: function(spk_id){
@@ -371,35 +366,15 @@
 					this.spk_forms.spk_deadline_team_2 = "";
 					this.spk_forms.spk_deadline_team_3 = "";
 				}
-
 				else if(id == "order"){
 					this.order.order_name = "";
 					this.order.order_location = "";
 				}
-				
 			},
 
 			/** 
 			 * End SPK Functions 
 			 */	
-
-			loading : function(){
-				this.$swal({
-					icon: 'warning',
-					title: 'Mohon tunggu',
-					text: 'Mengupload data anda...',
-					allowOutsideClick: false,
-					showConfirmButton: false,
-					timerProgressBar: true,
-					onBeforeOpen: () => {
-						this.$swal.showLoading()
-					},
-				});
-			},
-
-			dismissLoading : function(){
-				this.$swal.close();
-			},
 			
 			uploadSpkToServer: function(){
 				var app = this;
@@ -411,7 +386,17 @@
 						spk    : app.spk 
 					};
 
-					this.loading();
+					this.$swal({
+						icon: 'warning',
+						title: 'Mohon tunggu',
+						text: 'Mengupload data anda...',
+						allowOutsideClick: false,
+						showConfirmButton: false,
+						timerProgressBar: true,
+						onBeforeOpen: () => {
+							this.$swal.showLoading()
+						},
+					});
 					
 					axios({
 						method: 'POST',
@@ -469,14 +454,11 @@
 		},
 
 		created(){
-			
 			window.scrollTo(0,0);
 			if(this.$route.params.order_id == undefined){
 				this.order.order_id = this.generateId();
 			}
-
 			this.getProduct(this.$route.params.order_id);
-
 		},
 		components: {flatPicker}
 	};
