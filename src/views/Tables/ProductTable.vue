@@ -9,6 +9,11 @@
             {{title}}
           </h3>
         </div>
+        <div class="col-md-2">
+          <base-checkbox class="mb-3" style="padding-top:13px;" v-model="showActive">
+            <b style="margin-left:-15px;font-size:12px">Tampilkan Arsip</b>
+          </base-checkbox>
+        </div>
         <div class="col-lg-5 text-right p-0 pr-3 row" style="height:43px">
           <div class="col-md-8 pr-1">
             <base-input v-model="search" placeholder="Cari produk disini..." addon-left-icon="ni ni-zoom-split-in"></base-input>
@@ -35,7 +40,7 @@
         <template slot="columns">
           <th>Nama Produk</th>
           <th>Dimensi</th>
-          <th>Warna Tersedia</th>
+          <th>Status Produk</th>
           <th>Jenis Produk</th>
           <th></th>
         </template>
@@ -44,11 +49,10 @@
 
           <th scope="row">
             <div class="media align-items-center">
-              <a href="#" class="avatar rounded-circle mr-3">
+              <span @click="showImage('http://127.0.0.1' + row.product_img)" class="avatar rounded-circle mr-3">
                 <div :style="'width:100%;height:100%;border-radius:100%;background:url(http://127.0.0.1' + row.product_img + ';background-size:cover;background-position:center'">
                 </div>
-                
-              </a>
+              </span>
               <div class="media-body">
                 <span class="name mb-0 text-sm">{{row.product_name}}</span>
               </div>
@@ -60,7 +64,8 @@
           </td>
 
           <td>
-            <badge pill type="danger" style="font-size:11px">Belum tersedia</badge>
+            <badge pill type="success" v-if="row.active == 1" style="font-size:11px">Aktif</badge>
+            <badge pill type="danger" v-if="row.active == 0" style="font-size:11px">Diarsipkan</badge>
           </td>
           
           <td>
@@ -70,11 +75,15 @@
           <td class="text-right">
             <base-dropdown class="dropdown"
                            position="right">
-              <a slot="title" class="btn btn-sm btn-icon-only text-light" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                <i class="fas fa-ellipsis-v"></i>
-              </a>
-              <template>
+                <a slot="title" 
+                   class="btn btn-sm btn-icon-only text-light" 
+                   role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  <i class="ni ni-bullet-list-67" style="color:#000000"></i>
+                </a>
+              <template >
                 <a class="dropdown-item" :href="'#/product/detail/' + row.product_id" >Buka produk</a>
+                <span v-if="row.active == 1" class="dropdown-item" style="cursor: pointer" @click="archive(row.product_id)">Arsipkan</span>
+                <span v-if="row.active == 0" class="dropdown-item" style="cursor: pointer" @click="restore(row.product_id)">Pulihkan Arsip</span>
               </template>
             </base-dropdown>
           </td>
@@ -110,6 +119,7 @@
     },
     data() {
       return {
+        showActive: 0,
         tableData: [],
         search: "",
         pagination : 1,
@@ -128,12 +138,99 @@
              .catch(function(error){
                 console.log(error);
              })
+      },
+
+      showImage : function(image){
+        this.$swal({
+          imageUrl: image,
+          imageWidth: 400,
+          imageHeight: 400,
+        });
+      },
+
+      archive : function(id){
+        var app = this;
+        this.$swal({
+          title : 'Arsipkan Data?',
+          text  : "Anda yakin ingin mengarchive data ini?",
+          icon  : "question",
+          confirmButtonColor: '#e74c3c',
+          confirmButtonText: 'Arsipkan',
+          cancelButtonText : 'Batal',
+          showCancelButton: true
+        })
+        .then((result) => {
+          if(result.value){
+            app.archiveProduct(id);
+          }
+        });
+      },
+
+      restore : function(id){
+        var app = this;
+        this.$swal({
+          title : 'Pulihkan Data?',
+          text  : "Anda yakin ingin memulihkan data ini dari arsip?",
+          icon  : "question",
+          confirmButtonColor: '#2ecc71',
+          confirmButtonText: 'Pulihkan',
+          cancelButtonText : 'Batal',
+          showCancelButton: true
+        })
+        .then((result) => {
+          if(result.value){
+            app.restoreProduct(id);
+          }
+        });
+      },
+
+      archiveProduct : function(id){
+        var app = this;
+        console.log(id);
+        let url = "http://127.0.0.1/furniture_api/api/v1/product/archive.php?id=" + id;
+        axios.get(url)
+            .then(function(response){
+              app.tableData = response.data;
+              app.$swal("Arsip Berhasil", "Data berhasil di archive", "success");
+              console.log(response.data);
+            })
+            .catch(function(error){
+              app.$swal("Arsip Gagal", "Data gagal di archive", "error");
+              console.log(error);
+            })
+      },
+
+      restoreProduct : function(id){
+        var app = this;
+        console.log(id);
+        let url = "http://127.0.0.1/furniture_api/api/v1/product/restore.php?id=" + id;
+        axios.get(url)
+            .then(function(response){
+              app.tableData = response.data;
+              app.$swal("Pemulihan Berhasil", "Data berhasil dipulihkan", "success");
+              console.log(response.data);
+            })
+            .catch(function(error){
+              app.$swal("Pemulihan Gagal", "Data gagal dipulihkan", "error");
+              console.log(error);
+            })
       }
     },
+
     computed: {
       filteredProduct() {
         return this.tableData.filter(tableData => {
-          return tableData.product_name.toLowerCase().includes(this.search.toLowerCase())
+
+          if(this.showActive == 0){
+            if(tableData.active == 1){
+              return tableData.product_name.toLowerCase().includes(this.search.toLowerCase());
+            }
+          }
+          else{
+            if(tableData.active == 1 || tableData.active == 0){
+              return tableData.product_name.toLowerCase().includes(this.search.toLowerCase());
+            }
+          }
         })
       }
     },

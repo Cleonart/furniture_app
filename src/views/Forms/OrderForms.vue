@@ -166,7 +166,7 @@
 									thead-classes="thead-light"
 									tbody-classes="list"
 									:data="spk">
-
+									
 							<template slot="columns">
 								<th>Nama SPK</th>
 								<th>Nama Produk</th>
@@ -175,6 +175,7 @@
 								<th>Tenggat Tim 3</th>
 								<th></th>
 							</template>
+
 							<template slot-scope="{row}">
 								<td>
 									<span class="name mb-0 text-sm">{{row.spk_id}} | {{row.spk_name}}</span>
@@ -222,9 +223,15 @@
 				</div>
 				
 				<div class="card shadow col-md-12 mt-3 pt-3 pb-3">
-					<div class="col-md-12">
-						<base-button v-on:click="uploadSpkToServer()" type="primary">Selesai</base-button>
+					<div class="col-5 row">
+						<div class="col">
+							<base-button class="w-100" v-on:click="uploadSpkToServer()" type="primary">Selesai</base-button>
+						</div>
+						<div class="col">
+							<a href="#/order" class="w-100"><base-button class="w-100" type="danger">Kembali</base-button></a>
+						</div>
 					</div>
+					
 				</div>
 
 			</form>
@@ -291,9 +298,9 @@
 							app.order = response.data.data[0].order;
 							app.spk   = response.data.data[0].spk;
 						}
-						console.log(response.data);
 					})
 					.catch(function(error){
+						this.$swal("Proses Gagal", "Gagal mengambil data dari server", "error");
 						console.log(error);
 					})
 			},

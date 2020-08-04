@@ -11,7 +11,9 @@
         </div>
         <div class="col-lg-5 text-right p-0 pr-3 row" style="height:43px">
           <div class="col-md-8 pr-1">
-            <base-input placeholder="Cari order disini..." addon-left-icon="ni ni-zoom-split-in"></base-input>
+            <base-input v-model="search" 
+                        placeholder="Cari order disini..." 
+                        addon-left-icon="ni ni-zoom-split-in"></base-input>
           </div>
           <div class="col-md-4 pl-1">
             <router-link to="/order/tambah">
@@ -27,7 +29,7 @@
                   :class="type === 'dark' ? 'table-dark': ''"
                   :thead-classes="type === 'dark' ? 'thead-dark': 'thead-light'"
                   tbody-classes="list"
-                  :data="tableData">
+                  :data="filteredOrder">
         <template slot="columns">
           <th>ID Order</th>
           <th>Nama Order</th>
@@ -68,12 +70,11 @@
             </div>
           </td>
 
-
           <td class="text-right">
             <base-dropdown class="dropdown"
                            position="right">
               <a slot="title" class="btn btn-sm btn-icon-only text-light" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                <i class="fas fa-ellipsis-v"></i>
+                <i class="ni ni-bullet-list-67" style="color:#000"></i>
               </a>
               <template>
                 <a class="dropdown-item" :href="'#/order/detail/' + row.order.order_id">Buka order</a>
@@ -87,7 +88,9 @@
 
     <div class="card-footer d-flex justify-content-end"
          :class="type === 'dark' ? 'bg-transparent': ''">
-      <base-pagination total="30"></base-pagination>
+      <base-pagination  :total="filteredOrder.length" 
+                        :perPage="perPage" 
+                        v-model="pagination"></base-pagination>
     </div>
 
   </div>
@@ -106,7 +109,10 @@
     },
     data() {
       return {
-        tableData: []
+        tableData: [],
+        search: "",
+        pagination : 1,
+        perPage: 10
       }
     },
     methods: {
@@ -128,7 +134,14 @@
       }
 
     },
-
+    computed: {
+      filteredOrder() {
+        return this.tableData.filter(tableData => {
+          let data = tableData.order.order_name.toLowerCase().includes(this.search.toLowerCase()); 
+          return data;
+        })
+      }
+    },
     created(){
       this.getOrderData();
     }
