@@ -52,6 +52,16 @@
 							</select>
 						</div>
 
+						<div class="col-md-12 mb-3">
+							<b style="font-size:13px;padding-bottom:10px">Komponen</b>
+							<div class="card pl-4 pr-3 pt-3 pb-3 mb-2 mt-2" v-if="product.product_components.length > 0" >
+								<p style="position:relative;width:100%;margin-bottom:0px;margin-top:5px" v-for="product_component in product.product_components" v-bind:key="product_component">{{product_component}} 
+									<span style="position:absolute;right:0" @click="deleteProductComponent(product_component)"><i style="color:red;font-size:19px;cursor: pointer" class="ni ni-fat-remove"></i></span></p>
+							</div>
+							<p class="card pt-2 pb-2 pl-3 mt-2" v-if="product.product_components.length == 0">Belum ada komponen</p>
+							<base-button @click="addProductComponent()" outline class="col-md-12" type="success">Tambah Komponen</base-button>
+						</div>
+
 						<!-- dimensi -->
 						<div class="col-md-12">
 
@@ -150,6 +160,7 @@
 					product_img: 'img/products.jpg',
 					product_dimension_length:'',
 					product_dimension_wide:'',
+					product_components: [],
 					product_dimension_height:''
 				},
 
@@ -160,6 +171,8 @@
 					valid_wide : 0,
 					valid_height: 0
 				},
+				
+				component_from_server : ["Tes", "Wooden"],
 				buttonText : "Tambahkan",
 				myFiles : []
 			}
@@ -181,16 +194,20 @@
 				let url = "http://127.0.0.1/furniture_api/api/v1/product/get.php?product_id=" + id;
 				axios.get(url)
 					.then(function(response){
-						app.product = response.data[0];
-						let filepath = response.data[0].product_img;
+						app.component_from_server = response.data.components;
+						if(response.data.product.length > 0){
+							app.product = response.data.product[0];
+							console.log(response.data.components);
+							let filepath = response.data.product[0].product_img;
 
-						// mengambil gambar dan meletakannya di file uploader
-						if(filepath != ""){
-							filepath = "http://127.0.0.1" + filepath;
-							app.$refs.file.addFile(filepath, { index: 0 });
-							app.product.product_img = filepath;
+							// mengambil gambar dan meletakannya di file uploader
+							if(filepath != ""){
+								filepath = "http://127.0.0.1" + filepath;
+								app.$refs.file.addFile(filepath, { index: 0 });
+								app.product.product_img = filepath;
+							}
+							console.log(app.product);
 						}
-						console.log(app.product);
 					})
 					.catch(function(error){
 						console.log(error);
@@ -213,7 +230,51 @@
 					});
 			},
 
+			addProductComponent: async function(){
+				var app = this;
+				const { value: component } = await this.$swal({
+					title: 'Tambahkan komponen produk',
+					input: 'select',
+					inputOptions: app.component_from_server,
+					inputPlaceholder: 'Pilih Komponen',
+					showCancelButton: true,
+					inputValidator: (value) => {
+						return new Promise((resolve) => {
+							console.log(value);
+							resolve();
+						})
+					}
+				})
+
+				if (component) {
+					let component_selected = this.component_from_server[component];
+					let component_added    = false;
+					for(var i = 0; i < this.product.product_components.length; i++){
+						if(component_selected == this.product.product_components[i]){
+							this.$swal("Penambahan Gagal", "Komponen sudah ditambahkan sebelumnya", "error");
+							component_added = true;
+							break;
+						}
+					}
+					if(!component_added){
+						this.product.product_components.push(this.component_from_server[component]);
+					}
+				}
+			},
+
+			deleteProductComponent: function(id){
+				for(var i = 0; i < this.product.product_components.length; i++){
+					if(id == this.product.product_components[i]){
+						this.product.product_components.splice(i, i+1);
+						this.$swal("Komponen dihapus", "Penghapusan komponen berhasil", "success");
+						break;
+					}
+				}
+			},
+
 			formsCheck: function(){
+				
+				var app = this;
 
 				// melakukan cek nama dari produk
 				this.forms_class.valid_name = this.product.product_name == "" ? false : true;
@@ -252,7 +313,27 @@
 					this.forms_class.valid_height){
 
 					if(imgExist != null){
-						this.checkFile();
+
+						if(this.product.product_components.length > 0){
+							this.$swal({
+								title : 'Kirim data',
+								text  : "Anda yakin ingin mengirim data ini",
+								icon  : "question",
+								confirmButtonColor: '#2ecc71',
+								confirmButtonText: 'Kirim',
+								cancelButtonText : 'Batal',
+								showCancelButton: true
+							})
+							.then((result) => {
+								if(result.value){
+									app.checkFile();
+								}
+							});
+						}
+
+						else{
+							this.$swal('Komponen tidak ditemukan','Komponen kosong anda harus mengisi komponen terlebih dahulu','error');
+						}
 					}
 
 					else{
@@ -269,10 +350,8 @@
 			},
 
 			addOrUpdateData: function(){
-
 				var app = this;
 				let url = "http://127.0.0.1/furniture_api/api/v1/product/add.php";
-
 				axios({
 					method: 'POST',
 					url: url,
@@ -297,7 +376,9 @@
 				let random = Math.floor(Math.random() * (+max + 1 - +min)) + +min; 
 				return random;
 			}
+
 		},
+
 		components: {
 			FilePond
 		},
@@ -311,9 +392,10 @@
 			}
 
 			else{
-				this.getProduct(this.$route.params.product_id);
 				this.buttonText = "Perbarui";
 			}
+	
+			this.getProduct(this.$route.params.product_id);
 
 		}
 	};

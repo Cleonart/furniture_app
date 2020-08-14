@@ -132,7 +132,7 @@
         let url = "http://127.0.0.1/furniture_api/api/v1/product/get.php";
         axios.get(url)
              .then(function(response){
-                app.tableData = response.data; 
+                app.tableData = response.data.product; 
                 console.log(response);
              })
              .catch(function(error){
@@ -206,7 +206,7 @@
         let url = "http://127.0.0.1/furniture_api/api/v1/product/restore.php?id=" + id;
         axios.get(url)
             .then(function(response){
-              app.tableData = response.data;
+              app.tableData = response.data.product;
               app.$swal("Pemulihan Berhasil", "Data berhasil dipulihkan", "success");
               console.log(response.data);
             })

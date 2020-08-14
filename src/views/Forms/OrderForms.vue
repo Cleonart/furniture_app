@@ -88,7 +88,28 @@
 								</select>
 							</div>
 
-							<div class="col-12 mt-3">
+							<div class="col-12 mt-4">
+								<div class="row">
+									<div class="col-6">
+										<h5>Warna Produk <span class="text-red">*</span></h5>
+										<select>
+											<option default disabled selected>Pilih Produk</option>
+											<option>Tes</option>
+										</select>
+									</div>
+
+									<div class="col-6 ml-0">
+										<h5>Jumlah Produk <span class="text-red">*</span></h5>
+										<base-input placeholder="Jumlah Produk" 
+											v-model="spk_forms.spk_name"
+											type="number"
+											required
+											:valid="forms_class.valid_location"></base-input>
+									</div>
+								</div>
+							</div>
+
+							<div class="col-12">
 								<h5>Catatan SPK</h5>
 								<base-input	alternative="">
 											<textarea 	rows="2" 
@@ -108,15 +129,29 @@
 
 							<div class="col-12">
 								<h5 class="mb-2">Tenggat Waktu Tim 1</h5>
-								<base-input addon-left-icon="ni ni-calendar-grid-58">
-									<flat-picker 	slot-scope="{focus, blur}"
-													@on-open="focus"
-													@on-close="blur"
-													:config="{allowInput: true}"
-													class="form-control datepicker"
-													v-model="spk_forms.spk_deadline_team_1">
-									</flat-picker>
-								</base-input>
+								<div class="row">
+									<div class="col-4">
+										<base-input addon-left-icon="ni ni-calendar-grid-58">
+											<flat-picker 	slot-scope="{focus, blur}"
+															@on-open="focus"
+															@on-close="blur"
+															:config="{allowInput: true}"
+															class="form-control datepicker"
+															v-model="spk_forms.spk_deadline_team_1">
+											</flat-picker>
+										</base-input>
+									</div>
+									<div class="col-8">
+										<div class="col-12 mb-3">
+											<select>
+												<option selected=true disabled>Tipe Produk</option>
+												<option>Meja</option>
+												<option>Lemari</option>
+											</select>
+										</div>
+									</div>
+								</div>
+								
 							</div>
 
 							<div class="col">
