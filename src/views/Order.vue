@@ -32,10 +32,14 @@
 
   // Tables
   import OrderTable from './Dashboard/OrderTable.vue';
+  import { randomId } from '../functions/order';
 
   export default {
     components: {
       OrderTable,
+    },
+    created(){
+      randomId();
     }
   };
 </script>

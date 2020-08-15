@@ -67,9 +67,10 @@
 				</card>
 
 				<!-- form tambah spk -->
-				<div class="card shadow col-md-12 mt-3 pt-4 pb-3 pl-4 pr-4"> 
-					<h3 class="col mb-4">Tambah SPK Baru</h3>
-					<div class="row">
+				<div class="card shadow col-md-12 mt-3 pt-4 pb-1 pl-4 pr-4"> 
+					<h3 @click="toggleSpkForms()" style="cursor: pointer" class="col mb-4">Tambah SPK Baru</h3>
+					<i @click="toggleSpkForms()" :class="'arrow_forms_toggle ' + spk_arrow_class"></i>
+					<div class="row" v-if="spk_forms_view == 1">
 						<div class="col">
 							<div class="col-12">
 								<h5>Nama SPK <span class="text-red">*</span></h5>
@@ -90,18 +91,17 @@
 
 							<div class="col-12 mt-4">
 								<div class="row">
-									<div class="col-6">
+									<div class="col-7 pr-0">
 										<h5>Warna Produk <span class="text-red">*</span></h5>
-										<select>
-											<option default disabled selected>Pilih Produk</option>
-											<option>Tes</option>
+										<select v-model="spk_forms.spk_color">
+											<option default disabled selected>Pilih Warna</option>
+											<option v-for="item in colors" v-bind:key="item.settings_item">{{item.settings_item}}</option>
 										</select>
 									</div>
-
-									<div class="col-6 ml-0">
+									<div class="col-5">
 										<h5>Jumlah Produk <span class="text-red">*</span></h5>
 										<base-input placeholder="Jumlah Produk" 
-											v-model="spk_forms.spk_name"
+											v-model="spk_forms.spk_qty"
 											type="number"
 											required
 											:valid="forms_class.valid_location"></base-input>
@@ -126,11 +126,10 @@
 						</div>
 
 						<div class="col">
-
 							<div class="col-12">
-								<h5 class="mb-2">Tenggat Waktu Tim 1</h5>
 								<div class="row">
-									<div class="col-4">
+									<div class="col-4 pr-0">
+										<h5>Deadline Tim 1 <span class="text-red">*</span></h5>
 										<base-input addon-left-icon="ni ni-calendar-grid-58">
 											<flat-picker 	slot-scope="{focus, blur}"
 															@on-open="focus"
@@ -142,42 +141,61 @@
 										</base-input>
 									</div>
 									<div class="col-8">
-										<div class="col-12 mb-3">
-											<select>
-												<option selected=true disabled>Tipe Produk</option>
-												<option>Meja</option>
-												<option>Lemari</option>
-											</select>
-										</div>
+										<h5>Proses Kerja Tim 1 <span class="text-red">*</span></h5>
+										<select v-model="spk_forms.spk_process_team_1">
+											<option selected=true disabled>Pilih Proses</option>
+											<option v-for="item in process" v-bind:key="item.settings_item">{{item.settings_item}}</option>
+										</select>
 									</div>
 								</div>
-								
 							</div>
 
-							<div class="col">
-								<h5 class="mb-2">Tenggat Waktu Tim 2</h5>
-								<base-input addon-left-icon="ni ni-calendar-grid-58">
-									<flat-picker 	slot-scope="{focus, blur}"
-													@on-open="focus"
-													@on-close="blur"
-													:config="{allowInput: true}"
-													class="form-control datepicker"
-													v-model="spk_forms.spk_deadline_team_2">
-									</flat-picker>
-								</base-input>
+							<div class="col-12">
+								<div class="row">
+									<div class="col-4 pr-0">
+										<h5>Deadline Tim 2 <span class="text-red">*</span></h5>
+										<base-input addon-left-icon="ni ni-calendar-grid-58">
+											<flat-picker 	slot-scope="{focus, blur}"
+															@on-open="focus"
+															@on-close="blur"
+															:config="{allowInput: true}"
+															class="form-control datepicker"
+															v-model="spk_forms.spk_deadline_team_2">
+											</flat-picker>
+										</base-input>
+									</div>
+									<div class="col-8">
+										<h5>Proses Kerja Tim 2 <span class="text-red">*</span></h5>
+										<select v-model="spk_forms.spk_process_team_2">
+											<option selected=true disabled>Pilih Proses</option>
+											<option v-for="item in process" v-bind:key="item.settings_item">{{item.settings_item}}</option>
+										</select>
+									</div>
+								</div>
 							</div>
 
-							<div class="col">
-								<h5 class="mb-2">Tenggat Waktu Tim 3</h5>
-								<base-input addon-left-icon="ni ni-calendar-grid-58">
-									<flat-picker 	slot-scope="{focus, blur}"
-													@on-open="focus"
-													@on-close="blur"
-													:config="{allowInput: true}"
-													class="form-control datepicker"
-													v-model="spk_forms.spk_deadline_team_3">
-									</flat-picker>
-								</base-input>
+							<div class="col-12">
+								<div class="row">
+									<div class="col-4 pr-0">
+										<h5>Deadline Tim 3 <span class="text-red">*</span></h5>
+										<base-input addon-left-icon="ni ni-calendar-grid-58">
+											<flat-picker 	slot-scope="{focus, blur}"
+															@on-open="focus"
+															@on-close="blur"
+															:config="{allowInput: true}"
+															class="form-control datepicker"
+															v-model="spk_forms.spk_deadline_team_3">
+											</flat-picker>
+										</base-input>
+									</div>
+									<div class="col-8">
+										<h5>Proses Kerja Tim 3 <span class="text-red">*</span></h5>
+										<select v-model="spk_forms.spk_process_team_3">
+											<option selected=true disabled>Pilih Proses</option>
+											<option v-for="item in process" v-bind:key="item.settings_item">{{item.settings_item}}</option>
+										</select>
+									</div>
+								</div>
 							</div>
 						</div>
 					</div>
@@ -185,7 +203,6 @@
 
 				<!-- tabel detail spk -->
 				<div class="card shadow col-md-12 mt-3 pb-4">
-
 					<div class="card-header border-0 bg-transparent">
 						<div class="row align-items-center"> 
 							<div class="col">
@@ -195,7 +212,7 @@
 							</div>
 						</div>
 					</div>
-
+					
 					<div class="table-responsive">
 						<base-table class="table align-items-center table-flush"
 									thead-classes="thead-light"
@@ -205,9 +222,14 @@
 							<template slot="columns">
 								<th>Nama SPK</th>
 								<th>Nama Produk</th>
-								<th>Tenggat Tim 1</th>
-								<th>Tenggat Tim 2</th>
-								<th>Tenggat Tim 3</th>
+								<th>Warna Produk</th>
+								<th>Jumlah</th>
+								<th>Deadline Tim 1</th>
+								<th>Deadline Tim 2</th>
+								<th>Deadline Tim 3</th>
+								<th>Proses Kerja Tim 1</th>
+								<th>Proses Kerja Tim 2</th>
+								<th>Proses Kerja Tim 3</th>
 								<th></th>
 							</template>
 
@@ -227,6 +249,14 @@
 										</div>
 									</div>
 								</th>
+
+								<td>
+									<span class="name mb-0 text-sm">{{row.spk_color}}</span>
+								</td>
+
+								<td>
+									<span class="name mb-0 text-sm">{{row.spk_qty}} PCS</span>
+								</td>
 								
 								<td>
 									<span class="name mb-0 text-sm">{{row.spk_deadline_team_1}}</span>
@@ -238,6 +268,18 @@
 
 								<td>
 									<span class="name mb-0 text-sm">{{row.spk_deadline_team_3}}</span>
+								</td>
+
+								<td>
+									<span class="name mb-0 text-sm">{{row.spk_process_team_1}}</span>
+								</td>
+
+								<td>
+									<span class="name mb-0 text-sm">{{row.spk_process_team_2}}</span>
+								</td>
+
+								<td>
+									<span class="name mb-0 text-sm">{{row.spk_process_team_3}}</span>
 								</td>
 
 								<td class="text-right">
@@ -284,6 +326,10 @@
 	export default {
 		data(){
 			return{
+
+				spk_forms_view : 0,
+				spk_arrow_class : "ni ni-bold-down",
+
 				order:{
 					order_id:"",
 					order_name:"",
@@ -295,14 +341,21 @@
 					spk_id: "",
 					spk_name : "",
 					spk_product_id : "Pilih Produk",
+					spk_color: "Pilih Warna",
+					spk_qty: '',
 					spk_note : "",
 					spk_deadline_team_1 : "",
 					spk_deadline_team_2 : "",
-					spk_deadline_team_3 : ""
+					spk_deadline_team_3 : "",
+					spk_process_team_1 : "Pilih Proses",
+					spk_process_team_2 : "Pilih Proses",
+					spk_process_team_3 : "Pilih Proses"
 				},
 
 				spk: [],
 				products: [],
+				colors:[],
+				process:[],
 
 				forms_class: {
 					valid_name : 0,
@@ -329,10 +382,13 @@
 				axios.get(url)
 					.then(function(response){
 						app.products = response.data.product;
+						app.colors   = response.data.colors;
+						app.process  = response.data.process;
 						if(response.data.data.length > 0){
 							app.order = response.data.data[0].order;
 							app.spk   = response.data.data[0].spk;
 						}
+						console.log(response.data);
 					})
 					.catch(function(error){
 						this.$swal("Proses Gagal", "Gagal mengambil data dari server", "error");
@@ -365,20 +421,30 @@
 			addSPK: function(){
 				let spk_id = this.generateId();
 				let spk_name = this.spk_forms.spk_name;
+				let spk_color = this.spk_forms.spk_color;
+				let spk_qty  = this.spk_forms.spk_qty;
 				let spk_deadline_team_1 = this.spk_forms.spk_deadline_team_1;
 				let spk_deadline_team_2 = this.spk_forms.spk_deadline_team_2;
 				let spk_deadline_team_3 = this.spk_forms.spk_deadline_team_3;
+				let spk_process_team_1  = this.spk_forms.spk_process_team_1;
+				let spk_process_team_2  = this.spk_forms.spk_process_team_2;
+				let spk_process_team_3  = this.spk_forms.spk_process_team_3;
 
 				if(	this.spk_forms.spk_name != "" &&
 					this.spk_forms.spk_product_id != "Pilih Produk" &&
+					this.spk_forms.spk_color != "Pilih Warna" &&
+					this.spk_forms.spk_qty != "" &&
 					this.spk_forms.spk_deadline_team_1 != "" &&
 					this.spk_forms.spk_deadline_team_2 != "" &&
-					this.spk_forms.spk_deadline_team_3 != ""){
+					this.spk_forms.spk_deadline_team_3 != "" &&
+					this.spk_forms.spk_process_team_1  != "Pilih Proses" && 
+					this.spk_forms.spk_process_team_2  != "Pilih Proses" &&
+					this.spk_forms.spk_process_team_3  != "Pilih Proses"){
 					let i = this.searchForProduct(this.spk_forms.spk_product_id);
 					let product_id   = this.products[i].product_id;
 					let product_name = this.products[i].product_name;
 					let product_img  = this.products[i].product_img;
-					this.spk.push({spk_id, spk_name,product_id,product_name,product_img, spk_deadline_team_1, spk_deadline_team_2, spk_deadline_team_3});
+					this.spk.push({spk_id, spk_name,product_id, spk_color, spk_qty, product_name,product_img, spk_deadline_team_1, spk_deadline_team_2, spk_deadline_team_3, spk_process_team_1, spk_process_team_2, spk_process_team_3});
 					this.$swal("Penambahan SPK Berhasil", "Penambahan data berhasil", "success");
 					this.resetForms("spk");
 				}
@@ -491,6 +557,19 @@
 				window.scrollTo(0,0);
 				this.$swal("Data Gagal Disimpan", "Mohon lengkapi semua data", "error");
 				return false;
+			},
+
+			toggleSpkForms: function(){
+
+				if(this.spk_forms_view == 1){
+					this.spk_forms_view = 0;
+					this.spk_arrow_class = "ni ni-bold-down";
+				}
+
+				else{
+					this.spk_forms_view = 1;
+					this.spk_arrow_class = "ni ni-bold-up";
+				}
 			}
 
 		},
@@ -525,6 +604,38 @@
 		box-shadow: none;
 		-webkit-transition: all 0.2s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 		transition: all 0.2s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+	}
+
+	.arrow_forms_toggle{
+		position:absolute;
+		right: 35px;
+		top:33px;
+		cursor:pointer;
+		transition:0.2s ease;
+	}
+
+	.arrow_forms_toggle:hover{
+		transform:scale(1.1);
+	}
+
+	/* width */
+	::-webkit-scrollbar {
+		width: 8px;
+	}
+
+	/* Track */
+	::-webkit-scrollbar-track {
+		background: #f1f1f1; 
+	}
+
+	/* Handle */
+	::-webkit-scrollbar-thumb {
+		background: #888; 
+	}
+
+	/* Handle on hover */
+	::-webkit-scrollbar-thumb:hover {
+		background: #555; 
 	}
 
 </style>

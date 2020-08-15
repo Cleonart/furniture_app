@@ -56,9 +56,14 @@ export default new Router({
           component: () => import(/* webpackChunkName: "demo" */ './views/Forms/ProductForms.vue')
         },
         {
+          path: '/printout/:printout_type/:id',
+          name: 'Printout',
+          component: () => import(/* webpackChunkName: "demo" */ './views/Printout.vue')
+        },
+        {
           path: '/settings',
           name: 'Pengaturan',
-          component: () => import(/* webpackChunkName: "demo" */ './views/Forms/ProductForms.vue')
+          component: () => import(/* webpackChunkName: "demo" */ './views/Settings.vue')
         }
       ]
     },

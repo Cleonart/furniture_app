@@ -216,6 +216,17 @@
 
 			checkFile: function(){
 
+				this.$swal({
+					icon: 'warning',
+					title: 'Mohon tunggu',
+					text: 'Mengupload data anda...',
+					showConfirmButton: false,
+					timerProgressBar: true,
+					onBeforeOpen: () => {
+						this.$swal.showLoading()
+					},
+				});
+				
 				this.$refs.file.processFile()
 					.then(response => {
 						console.log(response);
@@ -293,17 +304,6 @@
 
 				// melakukan cek jika gambar sudah dimasukan
 				let imgExist = this.$refs.file.getFile();
-
-				this.$swal({
-					icon: 'warning',
-					title: 'Mohon tunggu',
-					text: 'Mengupload data anda...',
-					showConfirmButton: false,
-					timerProgressBar: true,
-					onBeforeOpen: () => {
-						this.$swal.showLoading()
-					},
-				});
 
 				// melakukan cek jika semua form sudah terisi
 				if(	this.forms_class.valid_name && 
