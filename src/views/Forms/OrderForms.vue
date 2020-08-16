@@ -318,6 +318,7 @@
 
 <script>
 
+	import {generateId, searchForProduct} from "../../functions/universal.js";
 	import flatPicker from "vue-flatpickr-component";
 	import "flatpickr/dist/flatpickr.css";
 
@@ -396,21 +397,6 @@
 					})
 			},
 
-			// mencari produk dengan id yang sama
-			// nilai balik : index dari products
-			searchForProduct: function(data){
-				let split_data = data.split("-");
-				console.log(split_data);
-				let i = 0;
-				for(i; i < this.products.length; i++){
-					console.log(this.products[i].product_id);
-					if(split_data[0] == this.products[i].product_id + " "){
-						break;
-					}
-				}
-				return i;
-			},
-
 			/** 
 			 * End Product Functions 
 			 */	
@@ -419,7 +405,7 @@
 			 * Start SPK Functions 
 			 */
 			addSPK: function(){
-				let spk_id = this.generateId();
+				let spk_id = generateId();
 				let spk_name = this.spk_forms.spk_name;
 				let spk_color = this.spk_forms.spk_color;
 				let spk_qty  = this.spk_forms.spk_qty;
@@ -440,7 +426,7 @@
 					this.spk_forms.spk_process_team_1  != "Pilih Proses" && 
 					this.spk_forms.spk_process_team_2  != "Pilih Proses" &&
 					this.spk_forms.spk_process_team_3  != "Pilih Proses"){
-					let i = this.searchForProduct(this.spk_forms.spk_product_id);
+					let i = searchForProduct(this.spk_forms.spk_product_id, this.products);
 					let product_id   = this.products[i].product_id;
 					let product_name = this.products[i].product_name;
 					let product_img  = this.products[i].product_img;
@@ -473,6 +459,9 @@
 					this.spk_forms.spk_deadline_team_1 = "";
 					this.spk_forms.spk_deadline_team_2 = "";
 					this.spk_forms.spk_deadline_team_3 = "";
+					this.spk_forms.spk_process_team_1 = "Pilih Proses";
+					this.spk_forms.spk_process_team_2 = "Pilih Proses";
+					this.spk_forms.spk_process_team_3 = "Pilih Proses";
 				}
 				else if(id == "order"){
 					this.order.order_name = "";
@@ -525,13 +514,6 @@
 				}
 			},
 
-			generateId: function(){
-				let min    = 1000000; 
-				let max    = 9999999;  
-				let random = Math.floor(Math.random() * (+max + 1 - +min)) + +min; 
-				return random;
-			},
-
 			checkOrderForms: function(){
 
 				// melakukan cek nama dari order
@@ -577,7 +559,7 @@
 		created(){
 			window.scrollTo(0,0);
 			if(this.$route.params.order_id == undefined){
-				this.order.order_id = this.generateId();
+				this.order.order_id = generateId();
 			}
 			this.getProduct(this.$route.params.order_id);
 		},

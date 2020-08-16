@@ -1,6 +1,7 @@
 <template>
 	<div>
 		<p>Printout</p>
+		<p>TEs</p>
 	</div>
 </template>
 
@@ -11,6 +12,13 @@
 		data(){
 			return{
 				pdf : '',
+
+				// data
+				order_data : {
+					order_id : "10",
+					order_name : "Mitha",
+					order_location : "Manado"
+				},
 
 				// page control
 				page_section_counter : 0,
@@ -23,8 +31,6 @@
 				let order_margin_y = this.page_section_counter;
 				order_margin_y += 15;
 
-				this.pdf.setFontSize(13);
-				this.pdf.text("SPK Nagarey", 10, order_margin_y);
 				order_margin_y += 7;
 
 				// image 
@@ -51,6 +57,9 @@
 
 			orderHeader: function(order_data){
 				
+				this.pdf.setFontSize(13);
+				this.pdf.text("SPK Nagarey", 10, order_margin_y);
+
 				let order_margin_y = 15;
 
 				// order id
@@ -68,17 +77,18 @@
 				this.pdf.text("Lokasi Order  : " + order_data.order_name, 10, order_margin_y);
 
 				this.page_section_counter += order_margin_y;
+			},
+
+			textWithBackground: function(text, placeholder, color){
+				this.pdf.setFillColor(94,114,228);
+				this.pdf.rect(0, 0, 210, 10, 'F');
 			}
+
 		},
 
 		created(){
 			this.pdf = new jsPDF();
-			let order_data = {
-				order_id : "10",
-				order_name : "Mitha",
-				order_location : "Manado"
-			}
-			this.orderHeader(order_data);
+			this.orderHeader(this.order_data);
 			this.newSection();
 			this.pdf.save("tes2.pdf");
 		}
