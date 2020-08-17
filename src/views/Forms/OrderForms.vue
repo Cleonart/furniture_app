@@ -241,7 +241,7 @@
 								<th scope="row">
 									<div class="media align-items-center">
 										<a :href="'#/product/detail/' + row.product_id"  class="avatar rounded-circle mr-3">
-											<div :style="'width:100%;height:100%;border-radius:100%;background:url(http://127.0.0.1' + row.product_img + ';background-size:cover;background-position:center'">
+											<div :style="'width:100%;height:100%;border-radius:100%;background:url(' + baseURL + row.product_img + ';background-size:cover;background-position:center'">
 											</div>
 										</a>
 										<div class="media-body">
@@ -318,7 +318,7 @@
 
 <script>
 
-	import {generateId, searchForProduct} from "../../functions/universal.js";
+	import {generateId, searchForProduct, baseURL} from "../../functions/universal.js";
 	import flatPicker from "vue-flatpickr-component";
 	import "flatpickr/dist/flatpickr.css";
 
@@ -379,7 +379,7 @@
 			// product : response.data.product 
 			getProduct : function(id){
 				var app = this;
-				let url = "http://127.0.0.1/furniture_api/api/v1/order/get.php?order_id=" + id;
+				let url = baseURL + "/furniture_api/api/v1/order/get.php?order_id=" + id;
 				axios.get(url)
 					.then(function(response){
 						app.products = response.data.product;
@@ -477,7 +477,7 @@
 				var app = this;
 				if(this.checkOrderForms()){
 					
-					let url = "http://127.0.0.1/furniture_api/api/v1/order/add.php";
+					let url = baseURL + "/furniture_api/api/v1/order/add.php";
 					let server_data = {
 						orders : app.order,
 						spk    : app.spk 

@@ -6,7 +6,11 @@
 </template>
 
 <script>
-	const { jsPDF } = require("jspdf");
+
+	import jsPDF from 'jspdf';
+	import autoTable from 'jspdf-autotable';
+	import {generatePdfFilename} from '../functions/universal.js';
+	import {model_pdf_order, model_pdf_spk} from '../functions/pdf_data_model.js';
 
 	export default {
 		data(){
@@ -26,71 +30,36 @@
 		},
 		methods: {
 
-			newSection:function(){
-				
-				let order_margin_y = this.page_section_counter;
-				order_margin_y += 15;
-
-				order_margin_y += 7;
-
-				// image 
-				var image = new Image();
-				image.src = "img/order.jpg";
-				this.pdf.addImage(image, 'jpg', 10, order_margin_y, 50, 50)
-				order_margin_y += 5;
-
-				// product data
-				this.pdf.setFontSize(13);
-				this.pdf.text("Porto Side Table", 65, order_margin_y);
-				order_margin_y += 7;
-
-				// color data and quantity
-				this.pdf.setFontSize(12);
-				this.pdf.text("Warna : NATURAL | Jumlah : 2 PCS" , 65, order_margin_y);
-				
-				// team 1 deadline and work process
-				
-				// team 2 deadline and work process
-				
-				// team 3 deadline and work process
+			orderData: function() {
+				this.pdf.setFontSize(18);
+				this.pdf.text('Data Order', 14, 22);
+				return model_pdf_order(this.pdf);
 			},
 
-			orderHeader: function(order_data){
-				
-				this.pdf.setFontSize(13);
-				this.pdf.text("SPK Nagarey", 10, order_margin_y);
-
-				let order_margin_y = 15;
-
-				// order id
-				this.pdf.setFontSize(11);
-				this.pdf.text("ID ORDER " + order_data.order_id, 10, order_margin_y);
-				order_margin_y += 10;
-
-				// order name
-				this.pdf.setFontSize(11);
-				this.pdf.text("Nama Order   : " + order_data.order_name, 10, order_margin_y);
-				order_margin_y += 7;
-
-				// order location 
-				this.pdf.setFontSize(11);
-				this.pdf.text("Lokasi Order  : " + order_data.order_name, 10, order_margin_y);
-
-				this.page_section_counter += order_margin_y;
-			},
-
-			textWithBackground: function(text, placeholder, color){
-				this.pdf.setFillColor(94,114,228);
-				this.pdf.rect(0, 0, 210, 10, 'F');
+			spkModelDataAutoTable : function () {
+				return model_pdf_spk(this.pdf);
 			}
 
 		},
 
 		created(){
+			
 			this.pdf = new jsPDF();
-			this.orderHeader(this.order_data);
-			this.newSection();
-			this.pdf.save("tes2.pdf");
+			let pdfName = "";
+
+			if(this.$route.params.printout_type == "order"){
+				alert("GENERATING ORDER");
+				autoTable(this.pdf, this.orderData().order);
+				autoTable(this.pdf, this.orderData().order_notes);
+				autoTable(this.pdf, this.spkModelDataAutoTable());
+				pdfName = generatePdfFilename("order", "123456");
+			}
+
+			else if(this.$route.params.printout_type == "spk"){
+				alert("GENERATING SPK");
+			}
+
+			this.pdf.save(pdfName);
 		}
 	};
 </script>
